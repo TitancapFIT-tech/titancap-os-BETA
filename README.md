@@ -1,16 +1,21 @@
 # Doit — Menos pantalla. Más vida real.
 
-A calm, mobile-first social planner built with Next.js, Supabase and PostgreSQL RLS. Doit helps people turn conversations into real-world plans, private groups and shared activities. It deliberately avoids infinite scrolling, vanity metrics and advertising.
+Doit convierte conversaciones en planes y encuentros presenciales. Es una red social tranquila y mobile-first: feed finito y elegido por la persona, agenda, conexiones mutuas, grupos privados, chat y controles de tiempo. No usa scroll infinito, métricas públicas de popularidad ni publicidad.
 
-## App capabilities
-- Email/password authentication and personal profiles.
-- Mutual connections and explicitly curated feed sources.
-- Event creation, editing, cancellation, private invitations and RSVP.
-- Private groups, member management and group chat.
-- In-app notifications and configurable daily usage limits.
-- Responsive desktop and mobile-first navigation.
+## Stack y funcionalidades
+- Next.js App Router, TypeScript y Supabase Auth.
+- Perfiles, búsqueda y solicitudes mutuas de conexión.
+- Feed limitado a amistades y grupos que la persona selecciona.
+- Planes con fecha, hora, ubicación, invitados y confirmación de asistencia.
+- Grupos privados y chat grupal.
+- Notificaciones dentro de la app y límite diario configurable.
 
-## Setup
-See the full application source and Supabase migration. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in your environment. Run `supabase/migrations/0001_doit_core.sql` in the Supabase SQL editor before authenticating users.
+## Desarrollo
+1. Instala Node.js 22 o superior.
+2. Ejecuta `npm install`.
+3. Copia `.env.example` a `.env.local`.
+4. Ejecuta `npm run dev`.
 
-Never expose a Supabase service-role/secret key in client-side code. All database tables are protected with row-level security.
+El proyecto Supabase `doit-social` ya está provisionado en São Paulo y contiene 13 tablas, 44 políticas RLS y permisos de tabla restringidos a usuarios autenticados. Consulta `DEPLOYMENT.md` para configurar Vercel y Auth Redirect URLs.
+
+No expongas claves `service_role` o secret keys. La publishable key usada en el navegador es pública por diseño y todas las operaciones están protegidas por RLS.
