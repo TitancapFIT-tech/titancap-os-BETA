@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Doit' },
   icons: {
     icon: [{ url: '/doit-icon.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    apple: [{ url: '/doit-icon.svg', type: 'image/svg+xml' }],
   },
 };
 
