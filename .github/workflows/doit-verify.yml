@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
       - name: Restore application source
         run: node scripts/restore-bundle.mjs
       - name: Inspect app routes and PWA files
