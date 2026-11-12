@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './pwa-install.css';
+import './motion-brand.css';
 import InstallPrompt from './components/InstallPrompt';
 
 export const metadata: Metadata = {
@@ -10,13 +11,13 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Doit' },
   icons: {
-    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }, { url: '/doit-icon.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/doit-icon.svg', type: 'image/svg+xml' }],
+    icon: [{ url: '/doit-icon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#183f32',
+  themeColor: '#f7f8f5',
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
