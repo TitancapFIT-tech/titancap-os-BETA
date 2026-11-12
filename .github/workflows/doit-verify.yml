@@ -1,0 +1,40 @@
+name: Doit build and PWA audit
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Restore application source
+        run: node scripts/restore-bundle.mjs
+      - name: Inspect app routes and PWA files
+        run: |
+          echo "=== ROUTE AND ASSET FILES ==="
+          find app public src -maxdepth 5 -type f 2>/dev/null | sort | head -250 || true
+          echo "=== PACKAGE SCRIPTS ==="
+          node -e "console.log(JSON.stringify(require('./package.json').scripts,null,2))"
+          for f in app/page.tsx app/globals.css app/layout.tsx app/manifest.ts public/manifest.json public/manifest.webmanifest public/sw.js public/service-worker.js; do
+            if [ -f "$f" ]; then
+              echo "=== $f ==="
+              sed -n '1,260p' "$f"
+            fi
+          done
+      - name: Install dependencies
+        run: npm install
+      - name: Production build
+        run: npm run build
