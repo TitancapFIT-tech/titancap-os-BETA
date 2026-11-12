@@ -68,7 +68,7 @@ if (existsSync(overlayDir)) {
     }
 
     const oldBrand = "function Brand({compact=false}:{compact?:boolean}){return <div className={compact?'brand compact-brand':'brand'}><span className=\"brand-mark\">d<span>.</span></span>{!compact&&<span><b>doit</b><small>MENOS PANTALLA. MÁS VIDA.</small></span>}</div>;}";
-    const newBrand = "function Brand({compact=false,hero=false}:{compact?:boolean;hero?:boolean}){const src=hero?'/doit-logo.svg':compact?'/doit-icon.svg':'/doit-horizontal.svg';return <div className={['brand',compact?'compact-brand':'',hero?'brand-hero':''].filter(Boolean).join(' ')}><img className=\"doit-brand-image\" src={src} alt={compact?'Doit': 'Doit — Real connections'} /></div>;}";
+    const newBrand = "function Brand({compact=false,hero=false}:{compact?:boolean;hero?:boolean}){const src=compact?'/doit-icon.svg':'/doit-horizontal.svg';return <div className={['brand',compact?'compact-brand':'',hero?'brand-hero':''].filter(Boolean).join(' ')}><img className=\"doit-brand-image\" src={src} alt=\"Doit — Real connections\" /></div>;}";
     if (!page.includes(oldBrand) && !page.includes('doit-brand-image')) {
       throw new Error('Doit brand patch could not find the original brand component.');
     }
