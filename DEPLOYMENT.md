@@ -69,3 +69,10 @@ La app incorpora perfiles, amistades, publicaciones, eventos e invitaciones, gru
 El flujo actual de chat usa Realtime con consulta periódica de respaldo. Los avisos del producto son notificaciones internas; no se ha configurado todavía envío de push nativo ni sincronización con calendarios externos. Estas funciones requieren permisos y configuración adicional.
 
 Antes de anunciar Doit como producto público, prueba con dos cuentas reales el registro/confirmación, inicio de sesión, solicitudes de amistad, creación de eventos, invitaciones, grupos, chat, permisos y recuperación de contraseña. La compilación de producción y los smoke tests PWA pasan en GitHub Actions; no sustituyen esa prueba funcional con usuarios.
+
+
+## 7. Corrección de configuración y marca (noviembre de 2026)
+
+La aplicación ya incorpora valores públicos de respaldo para el proyecto Supabase Doit. Si Vercel no inyecta las variables de entorno, el navegador utiliza la URL y la publishable key del proyecto Doit en lugar de mostrar la pantalla de “Configuración inicial”. Si se configuran variables propias, se aceptan únicamente URL Supabase y claves de cliente públicas compatibles. Nunca se debe colocar `service_role` en el navegador.
+
+La identidad recuperada utiliza el emblema original de Doit, el logotipo y el lema “Real connections”. También se incorporó un sistema de motion con movimiento ambiental lento, transiciones de entrada, microinteracciones y soporte para `prefers-reduced-motion`. Los recursos PWA, el icono y el favicon utilizan el mismo símbolo.
