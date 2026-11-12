@@ -25,9 +25,15 @@ jobs:
         run: |
           echo "=== ROUTE AND ASSET FILES ==="
           find app public src -maxdepth 5 -type f 2>/dev/null | sort | head -250 || true
+          echo "=== SOURCE SIZES ==="
+          wc -l -c app/page.tsx app/globals.css app/layout.tsx lib/supabase.ts 2>/dev/null || true
+          echo "=== SUPABASE CLIENT ==="
+          cat lib/supabase.ts 2>/dev/null || true
+          echo "=== AUTH, ERROR AND PWA HOOKS ==="
+          grep -nEi "signUp|signIn|onAuthStateChange|No fue posible|configuración|beforeinstallprompt|serviceWorker|install|setUser|setLoading|auth\.getSession" app/page.tsx || true
           echo "=== PACKAGE SCRIPTS ==="
           node -e "console.log(JSON.stringify(require('./package.json').scripts,null,2))"
-          for f in app/page.tsx app/globals.css app/layout.tsx app/manifest.ts public/manifest.json public/manifest.webmanifest public/sw.js public/service-worker.js; do
+          for f in app/page.tsx app/layout.tsx app/manifest.ts public/manifest.json public/manifest.webmanifest public/sw.js public/service-worker.js; do
             if [ -f "$f" ]; then
               echo "=== $f ==="
               sed -n '1,260p' "$f"
