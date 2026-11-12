@@ -1,0 +1,241 @@
+/* Doit motion system: organic, low-amplitude movement using compositor-friendly transforms. */
+:root {
+  --doit-deep: #174b35;
+  --doit-green: #208349;
+  --doit-lime: #68b84a;
+  --doit-mist: #f3f7ef;
+  --doit-curve: cubic-bezier(.22,.75,.22,1);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 0;
+  padding: 0 !important;
+  line-height: 0;
+  flex: none;
+}
+.brand .doit-brand-image {
+  display: block;
+  width: 154px;
+  height: 54px;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+  transition: transform .45s var(--doit-curve), filter .45s ease;
+}
+.brand:hover .doit-brand-image {
+  transform: translateY(-1px) scale(1.012);
+  filter: drop-shadow(0 5px 12px rgba(31, 93, 52, .12));
+}
+.brand.compact-brand .doit-brand-image {
+  width: 40px;
+  height: 40px;
+  object-position: center;
+}
+.brand.brand-hero .doit-brand-image {
+  width: clamp(205px, 27vw, 292px);
+  height: auto;
+  max-height: 330px;
+  object-position: left center;
+}
+.auth-art {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 82% 13%, rgba(127, 192, 103, .18), transparent 35%),
+    radial-gradient(ellipse at 10% 88%, rgba(56, 136, 76, .12), transparent 38%),
+    linear-gradient(145deg, #f7faf3 0%, #edf5e9 52%, #f9fbf7 100%) !important;
+  color: #183f32 !important;
+}
+.auth-art::before,
+.auth-art::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 999px;
+  filter: blur(2px);
+  will-change: transform, opacity;
+}
+.auth-art::before {
+  width: min(43vw, 460px);
+  aspect-ratio: 1;
+  top: -17%;
+  right: -10%;
+  background: radial-gradient(circle at 35% 38%, rgba(106, 183, 78, .19), rgba(106, 183, 78, 0) 69%);
+  animation: doit-orbit-a 22s ease-in-out infinite;
+}
+.auth-art::after {
+  width: min(36vw, 390px);
+  aspect-ratio: 1;
+  left: -14%;
+  bottom: -20%;
+  background: radial-gradient(circle at 55% 42%, rgba(36, 126, 70, .12), rgba(36, 126, 70, 0) 70%);
+  animation: doit-orbit-b 27s ease-in-out infinite;
+}
+.auth-art > .brand,
+.auth-art > div:nth-child(2) {
+  position: relative;
+  z-index: 1;
+}
+.auth-art .eyebrow {
+  color: #4e845b !important;
+}
+.auth-art h1 {
+  color: #163d2d !important;
+  text-wrap: balance;
+}
+.auth-art h1 em {
+  color: #3d9b50 !important;
+}
+.auth-art p {
+  color: #667c6b !important;
+  line-height: 1.75;
+}
+.auth-art > div:nth-child(2) > svg {
+  color: #4e955a !important;
+  opacity: .72;
+  animation: doit-heart-float 5.8s ease-in-out infinite;
+}
+.auth-art .brand-hero {
+  align-self: flex-start;
+  margin: 0 0 22px;
+  padding: 0;
+}
+.auth-art .brand-hero .doit-brand-image {
+  filter: drop-shadow(0 12px 22px rgba(28, 84, 45, .08));
+}
+.auth-form {
+  animation: doit-enter .65s var(--doit-curve) both;
+}
+.workspace {
+  position: relative;
+  isolation: isolate;
+}
+.workspace::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 90% 4%, rgba(104, 184, 74, .055), transparent 28%),
+    radial-gradient(ellipse at 2% 78%, rgba(32, 131, 73, .04), transparent 26%);
+  animation: doit-background-breathe 18s ease-in-out infinite alternate;
+}
+.page {
+  animation: doit-enter .48s var(--doit-curve) both;
+}
+button,
+a,
+input,
+textarea,
+select,
+.side-card,
+.plan-row,
+.group-card,
+.post-card,
+.modal,
+.quick-menu,
+.notice-panel {
+  transition:
+    color .24s ease,
+    background-color .24s ease,
+    border-color .24s ease,
+    box-shadow .32s var(--doit-curve),
+    transform .32s var(--doit-curve);
+}
+button:not(:disabled):active {
+  transform: translateY(1px) scale(.985);
+}
+.side-card:hover,
+.group-card:hover,
+.post-card:hover,
+.profile-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(30, 67, 40, .075);
+}
+.btn.primary,
+.mobile-plus {
+  box-shadow: 0 8px 20px rgba(28, 91, 55, .14);
+}
+.btn.primary:hover,
+.mobile-plus:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 13px 25px rgba(28, 91, 55, .19);
+}
+.modal,
+.quick-menu,
+.notice-panel {
+  animation: doit-modal-in .32s var(--doit-curve) both;
+}
+.backdrop {
+  animation: doit-fade .2s ease-out both;
+}
+.auth-form input:focus,
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  border-color: #8cbd87;
+  box-shadow: 0 0 0 4px rgba(99, 157, 92, .11);
+}
+@keyframes doit-orbit-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .72; }
+  50% { transform: translate3d(-24px, 20px, 0) scale(1.075); opacity: 1; }
+}
+@keyframes doit-orbit-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); opacity: .65; }
+  50% { transform: translate3d(26px, -18px, 0) scale(1.06); opacity: .9; }
+}
+@keyframes doit-heart-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-7px) rotate(2deg); }
+}
+@keyframes doit-background-breathe {
+  from { opacity: .58; }
+  to { opacity: 1; }
+}
+@keyframes doit-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes doit-modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes doit-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (max-width: 640px) {
+  .brand .doit-brand-image { width: 126px; height: 45px; }
+  .brand.compact-brand .doit-brand-image { width: 34px; height: 34px; }
+  .auth-art { display: none; }
+  .auth-brand .brand .doit-brand-image { width: 146px; height: 52px; }
+  .workspace::before { background: radial-gradient(ellipse at 90% 4%, rgba(104,184,74,.045), transparent 35%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-art::before,
+  .auth-art::after,
+  .auth-art > div:nth-child(2) > svg,
+  .workspace::before { animation: none !important; }
+  .page,
+  .auth-form,
+  .modal,
+  .quick-menu,
+  .notice-panel,
+  .backdrop { animation: none !important; }
+  .brand .doit-brand-image,
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  .side-card,
+  .group-card,
+  .post-card,
+  .profile-banner { transition: none !important; }
+}
