@@ -49,4 +49,24 @@ if (existsSync(overlayDir)) {
   };
   applyOverlay(overlayDir);
   console.log(`Applied ${overlaid} Doit override files.`);
+
+  const pagePath = join(process.cwd(), 'app', 'page.tsx');
+  if (existsSync(pagePath)) {
+    let page = readFileSync(pagePath, 'utf8');
+    const oldChatEffect = "useEffect(()=>{if(!db||!selectedGroup)return;const fetchMessages=async()=>{const r=await db.from('group_messages').select('*').eq('group_id',selectedGroup).order('created_at',{ascending:true}).limit(100);if(!r.error)setMessages(r.data||[]);};void fetchMessages();const timer=window.setInterval(fetchMessages,10000);return()=>window.clearInterval(timer);},[db,selectedGroup]);";
+    const newChatEffect = "useEffect(()=>{if(!db||!selectedGroup)return;const fetchMessages=async()=>{const r=await db.from('group_messages').select('*').eq('group_id',selectedGroup).order('created_at',{ascending:true}).limit(100);if(!r.error)setMessages(r.data||[]);};void fetchMessages();const channel=db.channel(\`doit-group-\${selectedGroup}\`).on('postgres_changes',{event:'*',schema:'public',table:'group_messages',filter:\`group_id=eq.\${selectedGroup}\`},()=>void fetchMessages()).subscribe();const fallback=window.setInterval(()=>void fetchMessages(),15000);return()=>{window.clearInterval(fallback);void db.removeChannel(channel);};},[db,selectedGroup]);";
+    if (!page.includes(oldChatEffect) && !page.includes("doit-group-")) {
+      throw new Error('Doit chat patch could not find the original message polling effect.');
+    }
+    if (page.includes(oldChatEffect)) page = page.replace(oldChatEffect, newChatEffect);
+
+    const syncEffect = "useEffect(()=>{if(!db||!user)return;let refreshTimer:number|undefined;const refresh=()=>{if(refreshTimer)window.clearTimeout(refreshTimer);refreshTimer=window.setTimeout(()=>void load(user),300);};const channel=db.channel(\`doit-user-sync-\${user.id}\`).on('postgres_changes',{event:'*',schema:'public',table:'posts'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'events'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'event_invites'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'friendships'},refresh).on('postgres_changes',{event:'*',schema:'public',table:'notifications'},refresh).subscribe();return()=>{if(refreshTimer)window.clearTimeout(refreshTimer);void db.removeChannel(channel);};},[db,user,load]);";
+    if (!page.includes('doit-user-sync-')) {
+      const anchor = "useEffect(()=>{if(user) void load(user);},[user,load]);";
+      if (!page.includes(anchor)) throw new Error('Doit sync patch could not locate the user data loading effect.');
+      page = page.replace(anchor, anchor + syncEffect);
+    }
+    writeFileSync(pagePath, page);
+    console.log('Enabled realtime user sync and group chat with polling fallback.');
+  }
 }
