@@ -1,0 +1,23 @@
+{
+  "id": "/",
+  "name": "Doit — Menos pantalla. Más vida real.",
+  "short_name": "Doit",
+  "description": "Conecta con tu gente, organiza planes y lleva más vida real a tu día.",
+  "lang": "es-CO",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#f7f8f5",
+  "theme_color": "#183f32",
+  "categories": ["social", "lifestyle"],
+  "icons": [
+    {
+      "src": "/doit-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
