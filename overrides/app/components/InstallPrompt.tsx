@@ -150,7 +150,7 @@ export default function InstallPrompt() {
             <button type="button" className="doit-install-close" aria-label="Cerrar" onClick={dismiss}>
               <X size={19} />
             </button>
-            <div className="doit-install-mark"><span>d<span>.</span></span></div>
+            <div className="doit-install-mark"><img src="/doit-icon.svg" alt="Doit" /></div>
             <div className="doit-install-eyebrow">DOIT · MÁS CERCA DE TU VIDA REAL</div>
             <h2 id="doit-install-title">Lleva Doit contigo.</h2>
             <p className="doit-install-lead">Añade Doit a la pantalla de inicio para abrir tus planes como una aplicación, sin buscar el enlace cada vez.</p>
