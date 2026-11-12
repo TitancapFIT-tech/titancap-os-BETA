@@ -24,7 +24,7 @@ function writeValue(key: string, value: string) {
 export default function InstallPrompt() {
   const [userId, setUserId] = useState<string | null>(null);
   const [deferredPrompt, setDeferredPrompt] = useState<InstallPromptEvent | null>(null);
-  const [isIOS, setIsIOS] = useState(false);
+  const [device, setDevice] = useState<'ios' | 'android' | 'other'>('other');
   const [installed, setInstalled] = useState(false);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -34,7 +34,7 @@ export default function InstallPrompt() {
       || (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
     const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent)
       || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
-    setIsIOS(ios);
+    setDevice(ios ? 'ios' : /android/i.test(window.navigator.userAgent) ? 'android' : 'other');
     setInstalled(standalone || readNumber(INSTALLED_KEY) === 1);
 
     const supabase = getSupabase();
@@ -113,19 +113,26 @@ export default function InstallPrompt() {
 
   if (!userId || installed) return null;
 
-  const steps = isIOS
+  const steps = device === 'ios'
     ? [
         'Abre Doit en Safari desde tu iPhone o iPad.',
         'Pulsa el botón Compartir (el cuadrado con la flecha hacia arriba).',
         'Desliza las opciones y selecciona “Añadir a pantalla de inicio”.',
         'Pulsa “Añadir”. El icono de Doit quedará junto a tus aplicaciones.',
       ]
-    : [
-        'Abre Doit en Chrome o en el navegador compatible de tu celular.',
-        'Pulsa el menú del navegador (⋮) en la parte superior.',
-        'Selecciona “Instalar aplicación” o “Añadir a pantalla de inicio”.',
-        'Confirma con “Instalar” o “Añadir”. Después abre Doit desde su icono.',
-      ];
+    : device === 'android'
+      ? [
+          'Abre Doit en Chrome o en el navegador compatible de tu celular.',
+          'Pulsa el menú del navegador (⋮) en la parte superior.',
+          'Selecciona “Instalar aplicación” o “Añadir a pantalla de inicio”.',
+          'Confirma con “Instalar” o “Añadir”. Después abre Doit desde su icono.',
+        ]
+      : [
+          'En Chrome o Edge, localiza el icono Instalar en la barra de direcciones o abre el menú del navegador.',
+          'Selecciona “Instalar Doit” o “Instalar aplicación”.',
+          'Confirma la instalación cuando aparezca la ventana del navegador.',
+          'Abre Doit desde el nuevo icono de tu dispositivo.',
+        ];
 
   return (
     <>
@@ -149,7 +156,7 @@ export default function InstallPrompt() {
             <p className="doit-install-lead">Añade Doit a la pantalla de inicio para abrir tus planes como una aplicación, sin buscar el enlace cada vez.</p>
             <div className="doit-install-device">
               <Smartphone size={18} />
-              <span>{isIOS ? 'Instalación en iPhone o iPad' : 'Instalación en Android'}</span>
+              <span>{device === 'ios' ? 'Instalación en iPhone o iPad' : device === 'android' ? 'Instalación en Android' : 'Instalación en este dispositivo'}</span>
               <Check size={16} />
             </div>
             <ol className="doit-install-steps">
