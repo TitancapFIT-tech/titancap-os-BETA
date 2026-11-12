@@ -66,6 +66,19 @@ if (existsSync(overlayDir)) {
       if (!page.includes(anchor)) throw new Error('Doit sync patch could not locate the user data loading effect.');
       page = page.replace(anchor, anchor + syncEffect);
     }
+
+    const oldBrand = "function Brand({compact=false}:{compact?:boolean}){return <div className={compact?'brand compact-brand':'brand'}><span className=\"brand-mark\">d<span>.</span></span>{!compact&&<span><b>doit</b><small>MENOS PANTALLA. MÁS VIDA.</small></span>}</div>;}";
+    const newBrand = "function Brand({compact=false,hero=false}:{compact?:boolean;hero?:boolean}){const src=hero?'/doit-logo.svg':compact?'/doit-icon.svg':'/doit-horizontal.svg';return <div className={['brand',compact?'compact-brand':'',hero?'brand-hero':''].filter(Boolean).join(' ')}><img className=\"doit-brand-image\" src={src} alt={compact?'Doit': 'Doit — Real connections'} /></div>;}";
+    if (!page.includes(oldBrand) && !page.includes('doit-brand-image')) {
+      throw new Error('Doit brand patch could not find the original brand component.');
+    }
+    if (page.includes(oldBrand)) page = page.replace(oldBrand, newBrand);
+    page = page.replace('<section className="auth-art"><Brand/>', '<section className="auth-art"><Brand hero/>');
+
+    const oldSessionEffect = "useEffect(()=>{if(!db){setLoading(false);return;}let alive=true;db.auth.getSession().then(({data})=>{if(alive){setUser(data.session?.user||null);setLoading(false);}});const {data:l}=db.auth.onAuthStateChange((_e,s)=>{setUser(s?.user||null);setLoading(false);if(!s?.user){setProfile(null);setPosts([]);setPlans([]);setGroups([]);}});return()=>{alive=false;l.subscription.unsubscribe();};},[db]);";
+    const newSessionEffect = "useEffect(()=>{if(!db){setLoading(false);return;}let alive=true;void db.auth.getSession().then(({data})=>{if(alive){setUser(data.session?.user||null);setLoading(false);}}).catch((error)=>{console.error('Doit session restore failed:',error);if(alive)setLoading(false);});const {data:l}=db.auth.onAuthStateChange((_e,s)=>{setUser(s?.user||null);setLoading(false);if(!s?.user){setProfile(null);setPosts([]);setPlans([]);setGroups([]);}});return()=>{alive=false;l.subscription.unsubscribe();};},[db]);";
+    if (page.includes(oldSessionEffect)) page = page.replace(oldSessionEffect,newSessionEffect);
+
     writeFileSync(pagePath, page);
     console.log('Enabled realtime user sync and group chat with polling fallback.');
   }
