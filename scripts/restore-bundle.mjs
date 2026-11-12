@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readdirSync, readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, normalize, isAbsolute } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
@@ -29,3 +29,24 @@ while (offset + 512 <= tar.length) {
 }
 if (!restored) throw new Error('Doit source bundle had no files to restore.');
 console.log(`Restored ${restored} Doit source files.`);
+
+const overlayDir = join(process.cwd(), 'overrides');
+if (existsSync(overlayDir)) {
+  let overlaid = 0;
+  const applyOverlay = (directory, relative = '') => {
+    for (const item of readdirSync(directory, { withFileTypes: true })) {
+      const source = join(directory, item.name);
+      const relPath = join(relative, item.name);
+      if (item.isDirectory()) {
+        applyOverlay(source, relPath);
+      } else if (item.isFile()) {
+        const target = join(process.cwd(), relPath);
+        mkdirSync(dirname(target), { recursive: true });
+        writeFileSync(target, readFileSync(source));
+        overlaid++;
+      }
+    }
+  };
+  applyOverlay(overlayDir);
+  console.log(`Applied ${overlaid} Doit override files.`);
+}
