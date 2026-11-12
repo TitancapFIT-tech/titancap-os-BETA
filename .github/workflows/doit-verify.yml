@@ -32,6 +32,11 @@ jobs:
           grep -q "doit-user-sync-" app/page.tsx
           grep -q "doit-group-" app/page.tsx
           grep -q "beforeinstallprompt" app/components/InstallPrompt.tsx
+          grep -q "DOIT_SUPABASE_URL" lib/supabase.ts
+          grep -q "DOIT_PUBLISHABLE_KEY" lib/supabase.ts
+          grep -q "doit-brand-image" app/page.tsx
+          test -s public/doit-horizontal.svg
+          test -s public/doit-icon.svg
       - name: Install dependencies
         run: npm install
       - name: Production build
@@ -57,3 +62,6 @@ jobs:
             });
           '
           curl -fsS http://127.0.0.1:3000/sw.js | grep -q "CACHE_NAME"
+          curl -fsS http://127.0.0.1:3000/doit-horizontal.svg | grep -q "Real connections"
+          curl -fsS http://127.0.0.1:3000/doit-icon.svg | grep -q 'aria-label="Doit"'
+          curl -fsS http://127.0.0.1:3000/favicon.svg | grep -q 'aria-label="Doit"'
