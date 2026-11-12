@@ -1,4 +1,4 @@
-name: Doit build and PWA audit
+name: Doit build and PWA smoke test
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,27 +19,41 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Restore application source
+      - name: Restore source and apply Doit improvements
         run: node scripts/restore-bundle.mjs
-      - name: Inspect app routes and PWA files
+      - name: Check PWA and realtime wiring
         run: |
-          echo "=== ROUTE AND ASSET FILES ==="
-          find app public src -maxdepth 5 -type f 2>/dev/null | sort | head -250 || true
-          echo "=== SOURCE SIZES ==="
-          wc -l -c app/page.tsx app/globals.css app/layout.tsx lib/supabase.ts 2>/dev/null || true
-          echo "=== SUPABASE CLIENT ==="
-          cat lib/supabase.ts 2>/dev/null || true
-          echo "=== AUTH, ERROR AND PWA HOOKS ==="
-          grep -nEi "signUp|signIn|onAuthStateChange|No fue posible|configuración|beforeinstallprompt|serviceWorker|install|setUser|setLoading|auth\.getSession" app/page.tsx || true
-          echo "=== PACKAGE SCRIPTS ==="
-          node -e "console.log(JSON.stringify(require('./package.json').scripts,null,2))"
-          for f in app/page.tsx app/layout.tsx app/manifest.ts public/manifest.json public/manifest.webmanifest public/sw.js public/service-worker.js; do
-            if [ -f "$f" ]; then
-              echo "=== $f ==="
-              sed -n '1,260p' "$f"
-            fi
-          done
+          test -s app/layout.tsx
+          test -s app/components/InstallPrompt.tsx
+          test -s app/pwa-install.css
+          test -s public/manifest.webmanifest
+          test -s public/sw.js
+          test -s public/offline.html
+          grep -q "doit-user-sync-" app/page.tsx
+          grep -q "doit-group-" app/page.tsx
+          grep -q "beforeinstallprompt" app/components/InstallPrompt.tsx
       - name: Install dependencies
         run: npm install
       - name: Production build
         run: npm run build
+      - name: Smoke test site and PWA assets
+        run: |
+          set -euo pipefail
+          npm run start -- --hostname 127.0.0.1 > /tmp/doit-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/ -o /tmp/doit-home.html; then break; fi
+            sleep 2
+          done
+          grep -q "Doit" /tmp/doit-home.html
+          curl -fsS http://127.0.0.1:3000/manifest.webmanifest | node -e '
+            let data = "";
+            process.stdin.on("data", chunk => data += chunk);
+            process.stdin.on("end", () => {
+              const manifest = JSON.parse(data);
+              if (manifest.display !== "standalone" || !manifest.icons?.length) process.exit(1);
+              console.log("PWA manifest OK:", manifest.short_name);
+            });
+          '
+          curl -fsS http://127.0.0.1:3000/sw.js | grep -q "CACHE_NAME"
